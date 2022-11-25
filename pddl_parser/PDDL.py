@@ -17,11 +17,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>
 
 import re
-from .action import Action
+from action import Action
+
+# TODO: import search.py file here to use search graph code from assignment 1.
+#  uncomment below lines
+import sys
+sys.path.append("/../")
+from search import *
+
+
 
 
 class PDDL_Parser:
-
     SUPPORTED_REQUIREMENTS = [':strips', ':negative-preconditions', ':typing']
 
     # -----------------------------------------------
@@ -85,7 +92,8 @@ class PDDL_Parser:
                     self.parse_types(group)
                 elif t == ':action':
                     self.parse_action(group)
-                else: self.parse_domain_extended(t, group)
+                else:
+                    self.parse_domain_extended(t, group)
         else:
             raise Exception('File ' + domain_filename + ' does not match domain pattern')
 
@@ -194,7 +202,8 @@ class PDDL_Parser:
                 while untyped_parameters:
                     parameters.append([untyped_parameters.pop(0), 'object'])
             elif t == ':precondition':
-                self.split_predicates(group.pop(0), positive_preconditions, negative_preconditions, name, ' preconditions')
+                self.split_predicates(group.pop(0), positive_preconditions, negative_preconditions, name,
+                                      ' preconditions')
             elif t == ':effect':
                 self.split_predicates(group.pop(0), add_effects, del_effects, name, ' effects')
             else:
@@ -216,6 +225,7 @@ class PDDL_Parser:
     def parse_problem(self, problem_filename):
         def frozenset_of_tuples(data):
             return frozenset([tuple(t) for t in data])
+
         tokens = self.scan_tokens(problem_filename)
         if type(tokens) is list and tokens.pop(0) == 'define':
             self.problem_name = 'unknown'
@@ -242,7 +252,8 @@ class PDDL_Parser:
                     self.split_predicates(group[0], positive_goals, negative_goals, '', 'goals')
                     self.positive_goals = frozenset_of_tuples(positive_goals)
                     self.negative_goals = frozenset_of_tuples(negative_goals)
-                else: self.parse_problem_extended(t, group)
+                else:
+                    self.parse_problem_extended(t, group)
         else:
             raise Exception('File ' + problem_filename + ' does not match problem pattern')
 
@@ -270,13 +281,32 @@ class PDDL_Parser:
                     positive.append(predicate)
 
 
+
+def convertToGraphList(states, objects, positive_goals, negative_goals):
+    # TODO: Here you should convert the parser data structure into a list accepted by the graph class
+    #  that you have used in the assignment one.
+    #  i.e.  [('A', 'S', 140), ('A', 'Z', 75), ('A', 'T', 118), ('C', 'P', 138), ('C', 'R', 146), ('C', 'D', 120),
+    #                    ('B', 'P', 101)]
+    connections = []
+
+
+    return connections
+
+
 # -----------------------------------------------
 # Main
 # -----------------------------------------------
+
+#
 if __name__ == '__main__':
     import sys, pprint
-    domain = sys.argv[1]
-    problem = sys.argv[2]
+
+    # TODO: You can access all problems through 'pddl-parser/examples/XXX' folder. Each problem, say problem "XXX", there are two
+    # TODO: files "examples/[PROBLEM_NAME]/[PROBLEM_NAME].pddl" (Domain) and "examples/[PROBLEM_NAME]/pd1.pddl" (Problem).
+    # TODO: Note: You may have different pd1.pddl files in a problem's folder; it refers to different representation of the same problem.
+
+    domain = '../examples/tsp/tsp.pddl'  # TODO: Add the domain path here
+    problem = '../examples/tsp/pb1.pddl'  # TODO: Add the problem path here
     parser = PDDL_Parser()
     print('----------------------------')
     pprint.pprint(parser.scan_tokens(domain))
@@ -294,3 +324,10 @@ if __name__ == '__main__':
     print('State: ' + str([list(i) for i in parser.state]))
     print('Positive goals: ' + str([list(i) for i in parser.positive_goals]))
     print('Negative goals: ' + str([list(i) for i in parser.negative_goals]))
+
+    # TODO: call convertToGraphList function.
+    connections = []
+
+    # TODO: use connections list to design a graph using NavigationProblem class.
+
+
